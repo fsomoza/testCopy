@@ -21,27 +21,22 @@ public class CenterService {
     private CenterRepository centerRepository;
 
     public MessageResponseDTO createCenter(CreateCenterDTO createCenterDTO) {
-        // Validate capacity string
-        String capacity = createCenterDTO.getCapacity();
-        if (capacity != null) {
-            // Check that capacity contains only valid combinations: B, M, S, BM, BS, MS, or BMS
-            if (!capacity.matches("^(B|M|S|BM|BS|MS|BMS)$")) {
-                return new MessageResponseDTO("Invalid capacity format. Should be one of: B, M, S, BM, BS, MS, or BMS.");
-            }
 
-            // The regex now handles the uniqueness check, but if you want to keep the distinct count check as a safeguard:
-            if (capacity.length() != capacity.chars().distinct().count()) {
-                return new MessageResponseDTO("Invalid capacity format. Each type (B, M, S) should appear at most once.");
+        if (createCenterDTO.getCapacity() != null){
+            if(!validateCapacity(createCenterDTO.getCapacity())){
+                return  new MessageResponseDTO("Invalid capacity format. Should be one of: B, M, S, BM, BS, MS, or BMS.");
             }
+        }else{
+            return  new MessageResponseDTO("Capacity cant be null");
         }
 
 
         // Check if there is already a center at the same coordinates
         Optional<Center> existingCenter = centerRepository.findByCoordinates
                 (
-                createCenterDTO.getCoordinates().getLatitude(),
-                createCenterDTO.getCoordinates().getLongitude()
-        );
+                        createCenterDTO.getCoordinates().getLatitude(),
+                        createCenterDTO.getCoordinates().getLongitude()
+                );
 
         if (existingCenter.isPresent()) {
             return new MessageResponseDTO("There is already a logistics center in that position.");
@@ -75,18 +70,8 @@ public class CenterService {
 
     public MessageResponseDTO updateCenter(Long id, UpdateCenterDTO updateCenterDTO) {
 
-        // Validate capacity string
-        String capacity = updateCenterDTO.getCapacity();
-        if (capacity != null) {
-            // Check that capacity contains only valid combinations: B, M, S, BM, BS, MS, or BMS
-            if (!capacity.matches("^(B|M|S|BM|BS|MS|BMS)$")) {
-                return new MessageResponseDTO("Invalid capacity format. Should be one of: B, M, S, BM, BS, MS, or BMS.");
-            }
-
-            // The regex now handles the uniqueness check, but if you want to keep the distinct count check as a safeguard:
-            if (capacity.length() != capacity.chars().distinct().count()) {
-                return new MessageResponseDTO("Invalid capacity format. Each type (B, M, S) should appear at most once.");
-            }
+        if(updateCenterDTO.getCapacity() != null && !validateCapacity(updateCenterDTO.getCapacity())){
+            return  new MessageResponseDTO("Invalid capacity format. Should be one of: B, M, S, BM, BS, MS, or BMS.");
         }
 
         Optional<Center> centerOptional = centerRepository.findById(id);
@@ -146,6 +131,23 @@ public class CenterService {
     public MessageResponseDTO deleteCenter(Long id) {
         centerRepository.deleteById(id);
         return new MessageResponseDTO("Logistics center deleted successfully.");
+    }
+
+    private Boolean validateCapacity(String capacity){
+        boolean condition = true;
+        // Validate capacity string
+
+        // Check that capacity contains only valid combinations: B, M, S, BM, BS, MS, or BMS
+        if (!capacity.matches("^(B|M|S|BM|BS|MS|BMS)$")) {
+            condition = false;
+        }
+
+        // The regex now handles the uniqueness check, but if you want to keep the distinct count check as a safeguard:
+        if (capacity.length() != capacity.chars().distinct().count()) {
+            condition = false;
+        }
+
+        return condition;
     }
 
     private CenterDTO convertToDTO(Center center) {
