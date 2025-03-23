@@ -21,6 +21,21 @@ public class CenterService {
     private CenterRepository centerRepository;
 
     public MessageResponseDTO createCenter(CreateCenterDTO createCenterDTO) {
+        // Validate capacity string
+        String capacity = createCenterDTO.getCapacity();
+        if (capacity != null) {
+            // Check that capacity contains only valid combinations: B, M, S, BM, BS, MS, or BMS
+            if (!capacity.matches("^(B|M|S|BM|BS|MS|BMS)$")) {
+                return new MessageResponseDTO("Invalid capacity format. Should be one of: B, M, S, BM, BS, MS, or BMS.");
+            }
+
+            // The regex now handles the uniqueness check, but if you want to keep the distinct count check as a safeguard:
+            if (capacity.length() != capacity.chars().distinct().count()) {
+                return new MessageResponseDTO("Invalid capacity format. Each type (B, M, S) should appear at most once.");
+            }
+        }
+
+
         // Check if there is already a center at the same coordinates
         Optional<Center> existingCenter = centerRepository.findByCoordinates
                 (
@@ -59,6 +74,21 @@ public class CenterService {
     }
 
     public MessageResponseDTO updateCenter(Long id, UpdateCenterDTO updateCenterDTO) {
+
+        // Validate capacity string
+        String capacity = updateCenterDTO.getCapacity();
+        if (capacity != null) {
+            // Check that capacity contains only valid combinations: B, M, S, BM, BS, MS, or BMS
+            if (!capacity.matches("^(B|M|S|BM|BS|MS|BMS)$")) {
+                return new MessageResponseDTO("Invalid capacity format. Should be one of: B, M, S, BM, BS, MS, or BMS.");
+            }
+
+            // The regex now handles the uniqueness check, but if you want to keep the distinct count check as a safeguard:
+            if (capacity.length() != capacity.chars().distinct().count()) {
+                return new MessageResponseDTO("Invalid capacity format. Each type (B, M, S) should appear at most once.");
+            }
+        }
+
         Optional<Center> centerOptional = centerRepository.findById(id);
         if (centerOptional.isEmpty()) {
             return new MessageResponseDTO("Center not found.");
