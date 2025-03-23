@@ -51,7 +51,7 @@ public class CenterService {
 
         Optional<Center> center = centerRepository.findById(id);
         if(!center.isPresent()){
-            return new MessageResponseDto("Center Id doesn't exist");
+            return new MessageResponseDto("Center not found.");
         }
         Center oldCenter=center.get();
         if(updateCenterDto.getCoordinates()!=null && !hasSameCoordinates(oldCenter.getCoordinates(),updateCenterDto.getCoordinates())){
@@ -60,7 +60,18 @@ public class CenterService {
             }
         }
 
-        if (updateCenterDto.getCurrentLoad()!=null && updateCenterDto.getMaxCapacity()!=null  && updateCenterDto.getCurrentLoad() > updateCenterDto.getMaxCapacity()) {
+
+
+        if(updateCenterDto.getCurrentLoad()!=null&& updateCenterDto.getMaxCapacity()==null){
+            if(updateCenterDto.getCurrentLoad()>oldCenter.getMaxCapacity()){
+                return new MessageResponseDto("Current load cannot exceed max capacity.");
+            }
+
+        }else if(updateCenterDto.getCurrentLoad()==null&& updateCenterDto.getMaxCapacity()!=null){
+            if(oldCenter.getCurrentLoad()> updateCenterDto.getMaxCapacity()){
+                return new MessageResponseDto("Current load cannot exceed max capacity.");
+            }
+        }else if( updateCenterDto.getCurrentLoad()!=null && updateCenterDto.getCurrentLoad() > updateCenterDto.getMaxCapacity()){
             return new MessageResponseDto("Current load cannot exceed max capacity.");
         }
 
