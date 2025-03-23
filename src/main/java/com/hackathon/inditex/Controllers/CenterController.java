@@ -5,6 +5,7 @@ import com.hackathon.inditex.Dtos.CreateCenterDto;
 import com.hackathon.inditex.Dtos.MessageResponseDto;
 import com.hackathon.inditex.Dtos.UpdateCenterDto;
 import com.hackathon.inditex.Services.CenterService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class CenterController {
     private CenterService centerService;
 
     @PostMapping
-    public ResponseEntity<MessageResponseDto> createCenter(@RequestBody CreateCenterDto createCenterDto){
+    public ResponseEntity<MessageResponseDto> createCenter(@Valid @RequestBody CreateCenterDto createCenterDto){
         MessageResponseDto response = centerService.createCenter(createCenterDto);
         if(response.getMessage().equals("Logistics center created successfully.")){
             return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -39,7 +40,7 @@ public class CenterController {
     public ResponseEntity<MessageResponseDto> updateCenter(@PathVariable long id,@RequestBody UpdateCenterDto updateCenterDto){
         MessageResponseDto response = centerService.updateCenter(updateCenterDto, id);
 
-        if (response.getMessage().equals("Center Id doesn't exist")) {
+        if (response.getMessage().equals("Center not found.")) {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         } else if (response.getMessage().equals("Logistics center updated successfully.")) {
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -51,7 +52,7 @@ public class CenterController {
     @DeleteMapping("/{id}")
     public ResponseEntity<MessageResponseDto> deleteCenter(@PathVariable Long id){
         MessageResponseDto response = centerService.deleteCenter(id);
-        if (response.getMessage().equals("Center Id doesn't exist")) {
+        if (response.getMessage().equals("Center not found.")) {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.OK);

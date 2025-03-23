@@ -94,7 +94,7 @@ public class CenterService {
     public MessageResponseDto deleteCenter(Long id) {
         Optional<Center> center = centerRepository.findById(id);
         if(!center.isPresent()){
-            return new MessageResponseDto("Center Id doesn't exist");
+            return new MessageResponseDto("Center not found.");
         }
         centerRepository.deleteById(id);
         return new MessageResponseDto("Logistics center deleted successfully.");
