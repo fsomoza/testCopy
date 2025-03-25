@@ -1,11 +1,10 @@
 package com.hackathon.inditex.Controllers;
 
-import com.hackathon.inditex.Dtos.CenterDto;
-import com.hackathon.inditex.Dtos.CreateCenterDto;
-import com.hackathon.inditex.Dtos.MessageResponseDto;
-import com.hackathon.inditex.Dtos.UpdateCenterDto;
-import com.hackathon.inditex.Services.CenterService;
-import jakarta.validation.Valid;
+import com.hackathon.inditex.dtos.CenterDTO;
+import com.hackathon.inditex.dtos.CreateCenterDTO;
+import com.hackathon.inditex.dtos.MessageResponseDTO;
+import com.hackathon.inditex.dtos.UpdateCenterDTO;
+import com.hackathon.inditex.services.CenterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,26 +20,28 @@ public class CenterController {
     private CenterService centerService;
 
     @PostMapping
-    public ResponseEntity<MessageResponseDto> createCenter(@Valid @RequestBody CreateCenterDto createCenterDto){
-        MessageResponseDto response = centerService.createCenter(createCenterDto);
-        if(response.getMessage().equals("Logistics center created successfully.")){
+    public ResponseEntity<MessageResponseDTO> createCenter(@RequestBody CreateCenterDTO createCenterDTO) {
+        MessageResponseDTO response = centerService.createCenter(createCenterDTO);
+
+        if (response.getMessage().equals("Logistics center created successfully.")) {
             return new ResponseEntity<>(response, HttpStatus.CREATED);
-        }else{
+        } else {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    };
+    }
 
     @GetMapping
-    public ResponseEntity<List<CenterDto>> getAllCenters() {
-        List<CenterDto> centers = centerService.getAllCenters();
+    public ResponseEntity<List<CenterDTO>> getAllCenters() {
+        List<CenterDTO> centers = centerService.getAllCenters();
         return new ResponseEntity<>(centers, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<MessageResponseDto> updateCenter(@PathVariable long id,@RequestBody UpdateCenterDto updateCenterDto){
-        MessageResponseDto response = centerService.updateCenter(updateCenterDto, id);
+    public ResponseEntity<MessageResponseDTO> updateCenter(@PathVariable Long id, @RequestBody UpdateCenterDTO updateCenterDTO) {
+        MessageResponseDTO response = centerService.updateCenter(id, updateCenterDTO);
 
         if (response.getMessage().equals("Center not found.")) {
+
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         } else if (response.getMessage().equals("Logistics center updated successfully.")) {
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -50,11 +51,8 @@ public class CenterController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<MessageResponseDto> deleteCenter(@PathVariable Long id){
-        MessageResponseDto response = centerService.deleteCenter(id);
-        if (response.getMessage().equals("Center not found.")) {
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(response,HttpStatus.OK);
+    public ResponseEntity<MessageResponseDTO> deleteCenter(@PathVariable Long id) {
+        MessageResponseDTO response = centerService.deleteCenter(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
