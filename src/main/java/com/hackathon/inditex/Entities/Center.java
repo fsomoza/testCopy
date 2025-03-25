@@ -1,6 +1,5 @@
 package com.hackathon.inditex.Entities;
 
-import com.hackathon.inditex.Dtos.CenterDto;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -24,16 +23,4 @@ public class Center {
 
     @Embedded
     private Coordinates coordinates;
-
-    public static CenterDto convertToDTO(Center center) {
-        CenterDto dto = new CenterDto();
-        dto.setId(center.getId());
-        dto.setName(center.getName());
-        dto.setCapacity(center.getCapacity());
-        dto.setStatus(center.getStatus());
-        dto.setMaxCapacity(center.getMaxCapacity());
-        dto.setCurrentLoad(center.getCurrentLoad());
-        dto.setCoordinates(center.getCoordinates());
-        return dto;
-    }
 }
